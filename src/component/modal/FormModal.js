@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import * as actionTypes from '../../store/action';
+import { handleValidation } from '../validation/formValidation';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Input } from 'reactstrap';
 
@@ -91,121 +92,43 @@ const FormModal = ({
     toggleErrorModal();
   }
 
-  const handleValidation = () => {
-    let errors = {};
-    let formIsValid = true;
-
-    if (!firstName) {
-      formIsValid = false;
-      errors.firstName = "Cannot be empty";
-    }
-
-    if (typeof firstName !== "undefined") {
-      if (!firstName.match(/^[a-zA-Z]+$/)) {
-        formIsValid = false;
-        errors.firstName = "Invalid first name";
-      }
-    }
-
-    if (!lastName) {
-      formIsValid = false;
-      errors.lastName = "Cannot be empty";
-    }
-
-    if (typeof lastName !== "undefined") {
-      if (!lastName.match(/^[a-zA-Z]+$/)) {
-        formIsValid = false;
-        errors.lastName = "Invalid last name";
-      }
-    }
-
-    if (!address1) {
-      formIsValid = false;
-      errors.address1 = "Cannot be empty";
-    }
-
-    if (!country) {
-      formIsValid = false;
-      errors.country = "Cannot be empty";
-    }
-
-    if (typeof country !== "undefined") {
-      if (!country.match(/^[a-zA-Z]+$/)) {
-        formIsValid = false;
-        errors.country = "Invalid country name";
-      }
-    }
-
-    if (typeof town !== "undefined") {
-      if (!town.match(/^[a-zA-Z]+$/)) {
-        formIsValid = false;
-        errors.town = "Invalid town name";
-      }
-    }
-
-    if (typeof region !== "undefined") {
-      if (!region.match(/^[a-zA-Z]+$/)) {
-        formIsValid = false;
-        errors.region = "Invalid region name";
-      }
-    }
-
-    if (!postCode) {
-      formIsValid = false;
-      errors.postCode = "Cannot be empty";
-    }
-
-    if (typeof postCode !== "undefined") {
-      if (!postCode.match(/^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9 _]+$/)) {
-        formIsValid = false;
-        errors.postCode = "Invalid Postcode";
-      }
-    }
-
-    if (!contactNumber) {
-      formIsValid = false;
-      errors.contactNumber = "Cannot be empty";
-    }
-
-    if (typeof contactNumber !== "undefined") {
-      if (!contactNumber.match(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/)) {
-        formIsValid = false;
-        errors.contactNumber = "Invalid contact number";
-      }
-    }
-    setError(errors)
-    return formIsValid;
-  }
-
   const addHandler = () => {
-    if(handleValidation()){
-    setLoading(true)
-    axios.post('/users.json', obj)
-      .then((response) => {
-        if (response.status === 200) {
-          onSuccess();
-        } else {
-          onFail(response);
-        }
-      }).catch(error => {
-        onFail("Something went wrong");
-      });
+    var errors = handleValidation(obj);
+    if (Object.keys(errors).length !== 0) {
+      setError(errors)
+    } else {
+      setError(emptyObj)
+      setLoading(true)
+      axios.post('/users.json', obj)
+        .then((response) => {
+          if (response.status === 200) {
+            onSuccess();
+          } else {
+            onFail(response);
+          }
+        }).catch(error => {
+          onFail("Something went wrong");
+        });
     }
   }
 
   const updateHandler = () => {
-    if(handleValidation()){
-    setLoading(true)
-    axios.put(`/users/${dataField.id}.json`, obj)
-      .then((response) => {
-        if (response.status === 200) {
-          onSuccess();
-        } else {
-          onFail(response);
-        }
-      }).catch(error => {
-        onFail("Something went wrong");
-      });
+    var errors = handleValidation(obj);
+    if (Object.keys(errors).length !== 0) {
+      setError(errors)
+    } else {
+      setError(emptyObj)
+      setLoading(true)
+      axios.put(`/users/${dataField.id}.json`, obj)
+        .then((response) => {
+          if (response.status === 200) {
+            onSuccess();
+          } else {
+            onFail(response);
+          }
+        }).catch(error => {
+          onFail("Something went wrong");
+        });
     }
   }
 
@@ -225,21 +148,21 @@ const FormModal = ({
                 value={firstName}
                 placeholder="First Name"
                 onChange={e => { setFirstName(e.target.value) }} />
-                {error.firstName && <span className="validation-error">{error.firstName}</span>}
+              {error.firstName && <span className="validation-error">{error.firstName}</span>}
             </FormGroup>
             <FormGroup>
               <Input id="lastName"
                 value={lastName}
                 placeholder="Last Name"
                 onChange={e => { setLastName(e.target.value) }} />
-                {error.lastName &&<span className="validation-error">{error.lastName}</span>}
+              {error.lastName && <span className="validation-error">{error.lastName}</span>}
             </FormGroup>
             <FormGroup>
               <Input id="address1"
                 value={address1}
                 placeholder="Address 1"
                 onChange={e => { setAddress1(e.target.value) }} />
-                {error.address1 &&<span className="validation-error">{error.address1}</span>}
+              {error.address1 && <span className="validation-error">{error.address1}</span>}
             </FormGroup>
             <FormGroup>
               <Input id="address2"
@@ -252,35 +175,35 @@ const FormModal = ({
                 value={region}
                 placeholder="Region"
                 onChange={e => { setRegion(e.target.value) }} />
-                {error.region &&<span className="validation-error">{error.region}</span>}
+              {error.region && <span className="validation-error">{error.region}</span>}
             </FormGroup>
             <FormGroup>
               <Input id="town"
                 value={town}
                 placeholder="Town"
                 onChange={e => { setTown(e.target.value) }} />
-                {error.town &&<span className="validation-error">{error.town}</span>}
+              {error.town && <span className="validation-error">{error.town}</span>}
             </FormGroup>
             <FormGroup>
               <Input id="country"
                 value={country}
                 placeholder="Country"
                 onChange={e => { setCountry(e.target.value) }} />
-                {error.country &&<span className="validation-error">{error.country}</span>}
+              {error.country && <span className="validation-error">{error.country}</span>}
             </FormGroup>
             <FormGroup>
               <Input id="postCode"
                 value={postCode}
                 placeholder="Post Code"
                 onChange={e => { setPostCode(e.target.value) }} />
-                {error.postCode &&<span className="validation-error">{error.postCode}</span>}
+              {error.postCode && <span className="validation-error">{error.postCode}</span>}
             </FormGroup>
             <FormGroup>
               <Input id="contactNumber"
                 value={contactNumber}
                 placeholder="Contact Number"
                 onChange={e => { setContactNumber(e.target.value) }} />
-                {error.contactNumber &&<span className="validation-error">{error.contactNumber}</span>}
+              {error.contactNumber && <span className="validation-error">{error.contactNumber}</span>}
             </FormGroup>
           </Form>
         </ModalBody>
