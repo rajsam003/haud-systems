@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import * as actionTypes from '../../store/action';
-import { handleValidation } from '../validation/formValidation';
+import { handleValidation } from '../../service/validation/formValidation';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Input } from 'reactstrap';
 
